@@ -1,7 +1,7 @@
 console.log("Loaded");
 
 const reader = new FileReader();
-const uploadButton = document.getElementById("fileConfirm");
+const uploadButton = document.getElementById("addToListButton");
 const fileInput = document.getElementById("fileUpload");
 const nameInput = document.getElementById("nameInput");
 const addNameButton = document.getElementById("nameConfirm");
@@ -66,6 +66,7 @@ function addPupilName(pupilName){
 }
 
 addNameButton.onclick = () => {
+    console.log("sd");
     if (nameInput.value){
         addPupilName(nameInput.value);
     }
@@ -80,5 +81,4 @@ reader.onload = (result) =>{
         addPupilName(pupil);
     }
 }
-saveToTextFile(["11","22"]);
 

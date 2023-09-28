@@ -1,3 +1,66 @@
+body{
+    margin: 0px
+}
+
 .pupilName{
     display: inline-block;
+}
+
+.Header{
+    display: flex;
+}
+
+.MainArea{
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+}
+
+.MainAreaDiv1, .MainAreaDiv2, .MainAreaDiv3{
+    flex: 1;
+    display: flex;
+    justify-content: space-around;
+    border-width: 3px;
+    border-color: black;
+    border-style: solid;
+}
+
+.NameListMainDiv{
+    width: 500px;
+    border-width: 1px;
+    border-color: black;
+    border-style: solid;
+    display: flex;
+    flex-direction: column;
+}
+.CenterElements{
+    display: flex;
+    justify-content: space-around;
+}
+
+.NameAddDiv{
+    display: flex;
+}
+
+#nameInput{
+    margin-left: 10px;
+    margin-right: 10px;
+    flex: 1px;
+}
+
+#nameConfirm{
+    width: 100px;
+    margin-right: 10px;
+}
+#nameArea{
+    height: 100%;
+    overflow-y: hidden;
+}
+#nameArea:hover{
+    transition: 1s;
+    overflow-y: scroll  ;
+}
+
+.UploadButton{
+    width: 100px;
 }

@@ -7,15 +7,36 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <input placeholder = "enter name" id = "nameInput">
-    <button id = "nameConfirm">Confirm</button>
-    <p></p>
-    <input type="file" id="fileUpload">
-    <button id="fileConfirm">Confirm</button>
-    <div id = "nameArea">
+    <div class="Header">
 
     </div>
-    <a id="downloadA"><button>Download pupil list</button></a>
-    <script src = "script.js"></script>
+    <div class="MainArea">
+        <div class="MainAreaDiv1">
+            <div class="NameListMainDiv">
+                <div class="NameAddDiv">
+                    <input placeholder="enter name" id="nameInput">
+                    <button id="nameConfirm">Confirm</button>
+                </div>
+                <p></p>
+                <div class="CenterElements">
+                    <input type="file" id="fileUpload">
+                    <button id="addToListButton" class="UploadButton">Add to list</button>
+                    <button id="openToListButton" class="UploadButton">Open file</button>
+                </div>
+                <div id="nameArea">
+                </div>
+                <div class="CenterElements">
+                    <a id="downloadA"><button>Download pupil list</button></a>
+                </div>
+            </div>
+        </div>
+        <div class="MainAreaDiv2">
+            
+        </div>
+        <div class="MainAreaDiv3">
+            
+        </div>
+    </div>
+    <script src="script.js"></script>
 </body>
 </html>
