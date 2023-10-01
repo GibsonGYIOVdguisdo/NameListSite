@@ -1,5 +1,3 @@
-console.log("Loaded");
-
 const reader1 = new FileReader();
 const reader2 = new FileReader();
 const uploadButton = document.getElementById("addToListButton");
@@ -9,10 +7,25 @@ const addNameButton = document.getElementById("nameConfirm");
 const nameArea = document.getElementById("nameArea");
 const downloadButton = document.getElementById("downloadA");
 const openButton = document.getElementById("openToListButton");
+const randomNameButton = document.getElementById("randomNameButton");
+const lastRandomNameText = document.getElementById("chosenRandomName");
+const previousRandomNameDiv = document.getElementById("lastRandomNames");
 let nameCount = 0;
 let allPupils = {};
+
+randomNameButton.onclick = () =>{
+    let pupilCount = Object.keys(allPupils).length;
+    let randomPupil = Object.values(allPupils)[Math.floor(Math.random()*pupilCount)];
+    if(randomPupil != undefined){
+        lastRandomNameText.innerHTML = randomPupil;
+        let tempPar = document.createElement("p");
+        tempPar.innerHTML = randomPupil;
+        previousRandomNameDiv.prepend(tempPar);
+    }
+}
+
+
 uploadButton.onclick = () => {
-    console.log("File read");
     if (fileInput.files[0] != undefined){
         reader1.readAsText(fileInput.files[0]);
     }
@@ -25,9 +38,7 @@ function saveToTextFile(textAsArray){
 
 function getPupilArray(allPupils){
     let returnArray = [];
-    for(const [uid,pupilName] of Object.entries(allPupils)){
-        console.log("ss: "+uid);
-        console.log("ee: "+pupilName);
+    for(let pupilName of Object.values(allPupils)){
         returnArray.push(pupilName+"\n");
     }
     returnArray[returnArray.length-1] = returnArray[returnArray.length-1].replace("\n","");
@@ -59,8 +70,6 @@ function addPupilName(pupilName){
     tempBut.id = "pupil"+nameCount;
     tempBut.onclick = () => {
         delete allPupils[tempBut.id];
-        console.log(tempBut.id);
-        console.log(allPupils);
         tempDiv.remove();
         updateDownloadButton();
     }
@@ -79,7 +88,6 @@ nameInput.addEventListener("keyup", (event) => {
     if(event.key == "Enter"){
         addNameViaInputField();
     }
-    nameInput:focus = false;
 })
 
 
@@ -98,7 +106,6 @@ reader1.onload = (result) =>{
     }
 }
 reader2.onload = (result) =>{
-    console.log("sad"); 
     allPupils = {};
     nameArea.innerHTML="";
     let allText = result.target.result;

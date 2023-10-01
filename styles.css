@@ -54,8 +54,7 @@ body{
     border-style: solid;
 }
 
-.NameListMainDiv{
-    border-radius: 20px;
+.NameListMainDiv, .randomNameDiv{
     width: 500px;
     border-width: 1px;
     border-color: black;
@@ -108,4 +107,34 @@ body{
 
 .downloadButton{
     height: 50px;
+}
+
+#randomNameButton{
+    margin-top:10px;
+    height: 50px;
+    width: 100%;
+}
+.previousNames{
+    padding-top:10px;
+    padding-bottom:10px;
+    border-width: 0px;
+    font-size: 20px;
+    border-top-width: 1px;
+    border-style: solid;
+    text-align: center;
+}
+
+
+#chosenRandomName{
+    height:10px;
+    text-align: center;
+}
+
+#lastRandomNames > p{
+    text-align: center;
+}
+
+#lastRandomNames{
+    height: 100vh;
+    overflow-y: hidden;
 }
