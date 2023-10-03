@@ -54,7 +54,7 @@ body{
     border-style: solid;
 }
 
-.NameListMainDiv, .randomNameDiv{
+.NameListMainDiv, .randomNameDiv, .NameListNames{
     width: 500px;
     border-width: 1px;
     border-color: black;
@@ -95,7 +95,7 @@ body{
 .UploadButton{
     width: 100px;
 }
-.pupilDiv{
+.pupilDiv, .classButton{
     display: flex;
     justify-content: space-between;
     padding-left:10px;

@@ -10,12 +10,16 @@ const openButton = document.getElementById("openToListButton");
 const randomNameButton = document.getElementById("randomNameButton");
 const lastRandomNameText = document.getElementById("chosenRandomName");
 const previousRandomNameDiv = document.getElementById("lastRandomNames");
+const classNameDiv = document.getElementById("classListDiv");
+
+let currentClass = "new";
 let nameCount = 0;
 let allPupils = {};
+let allClasses = {};
 
 randomNameButton.onclick = () =>{
-    let pupilCount = Object.keys(allPupils).length;
-    let randomPupil = Object.values(allPupils)[Math.floor(Math.random()*pupilCount)];
+    let pupilCount = getPupilArrayFromClass(currentClass).length;
+    let randomPupil = getPupilArrayFromClass(currentClass)[Math.floor(Math.random()*pupilCount)];
     if(randomPupil != undefined){
         lastRandomNameText.innerHTML = randomPupil;
         let tempPar = document.createElement("p");
@@ -36,26 +40,48 @@ function saveToTextFile(textAsArray){
     return(textFile);
 }
 
-function getPupilArray(allPupils){
-    let returnArray = [];
-    for(let pupilName of Object.values(allPupils)){
-        returnArray.push(pupilName+"\n");
-    }
-    returnArray[returnArray.length-1] = returnArray[returnArray.length-1].replace("\n","");
-    return(returnArray);
-}
 
 function getPupilTXT(allPupils){
-    return(saveToTextFile(getPupilArray(allPupils)));
+    let pupilArrayPrepared = [];
+    for(let index = 0; allPupils.length-1>index; index++){
+        pupilArrayPrepared.push(allPupils[index]+"\n");
+    }
+    pupilArrayPrepared.push(allPupils[allPupils.length-1]);
+    return(saveToTextFile(pupilArrayPrepared));
 }
 
 function updateDownloadButton(){
-    downloadButton.href = URL.createObjectURL(getPupilTXT(allPupils));
+    downloadButton.href = URL.createObjectURL(getPupilTXT(getPupilArrayFromClass(currentClass)));
     downloadButton.download = "pupils.txt"
 }
 
-function addPupilName(pupilName){
-    allPupils["pupil"+nameCount] = pupilName;
+
+function openClassToPage(className){
+    console.log(className);
+    nameArea.innerHTML = "";
+    currentClass = className;
+    for(let [key, value] of getPupilObjectFromClass(className)){
+        addPupilToSite(className, value, key);
+    }
+}
+
+function addPupilMain(className, pupilName){
+    addPupilToClass(className, pupilName);
+    let currentId = allClasses[className]["currentId"];
+    addPupilToSite(className,pupilName,"pupil"+currentId);
+}
+
+function addPupilToSite(className, pupilName, pupilID){
+    let pupilButton = addPupilToSiteWithoutDeletion(pupilName,pupilID);
+    pupilButton.onclick = () =>{
+        console.log(className, pupilID);
+        removePupilFromClassByID(className, pupilID);
+        pupilButton.parentNode.remove();
+        updateDownloadButton();
+    }
+}
+
+function addPupilToSiteWithoutDeletion(pupilName, pupilID){ 
     let tempDiv = document.createElement("div");
     let tempPar = document.createElement("p");
     let tempBut = document.createElement("button");
@@ -67,24 +93,60 @@ function addPupilName(pupilName){
     tempDiv.appendChild(tempBut);
     tempDiv.className = "pupilDiv";
     nameArea.appendChild(tempDiv);
-    tempBut.id = "pupil"+nameCount;
-    tempBut.onclick = () => {
-        delete allPupils[tempBut.id];
-        tempDiv.remove();
-        updateDownloadButton();
-    }
-    nameCount += 1;
+    tempBut.id = pupilID;
     updateDownloadButton();
+    return(tempBut);
+}
+
+function addClassToPage(className){
+    let tempBut = document.createElement("button");
+    tempBut.innerHTML = className;
+    tempBut.className = "classButton";
+    tempBut.onclick = () => {
+        openClassToPage(className);
+    }
+    classNameDiv.appendChild(tempBut);
+}
+
+function addPupilToClass(className, pupilName){
+    if(className in allClasses){
+        allClasses[className]["currentId"] += 1;
+        currentPupilId = allClasses[className]["currentId"];
+        allClasses[className]["pupilList"]["pupil"+currentPupilId] = pupilName;
+    }
+    else{
+        allClasses[className] = {};
+        allClasses[className]["currentId"] = 1;
+        allClasses[className]["pupilList"] = {};
+        currentPupilId = allClasses[className]["currentId"];    
+        allClasses[className]["pupilList"]["pupil"+currentPupilId] = pupilName;
+        addClassToPage(className);
+    }
+}
+
+function removePupilFromClassByID(className, pupilID){
+    console.log(allClasses[className]["pupilList"][pupilID])
+    if(className in allClasses){
+        delete allClasses[className]["pupilList"][pupilID];
+    }
+}
+
+function getPupilArrayFromClass(className){
+    return(Object.values(allClasses[className]["pupilList"]));
+}
+
+function getPupilObjectFromClass(className){
+    return(allClasses[className]["pupilList"]);
 }
 
 
 function addNameViaInputField(){
     if (nameInput.value){
-        addPupilName(nameInput.value);
+        addPupilMain(currentClass, nameInput.value);
     }
     nameInput.value = "";
 }
-nameInput.addEventListener("keyup", (event) => {
+nameInput.addEventListener("keydown", (event) => {
     if(event.key == "Enter"){
         addNameViaInputField();
     }
@@ -102,17 +164,17 @@ reader1.onload = (result) =>{
     allText = allText.replaceAll("\r","");
     let fileAsArray = allText.split("\n");
     for (let pupil of fileAsArray){
-        addPupilName(pupil);
+        addPupilMain(currentClass, pupil);
     }
 }
 reader2.onload = (result) =>{
-    allPupils = {};
+    allClasses[currentClass]["pupilList"] = {};
     nameArea.innerHTML="";
     let allText = result.target.result;
     allText = allText.replaceAll("\r","");
     let fileAsArray = allText.split("\n");
     for (let pupil of fileAsArray){
-        addPupilName(pupil);
+        addPupilMain(currentClass, pupil);
     }
 }
 
