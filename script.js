@@ -18,8 +18,8 @@ let nameCount = 0;
 let allPupils = {};
 let allClasses = {};
 
-
-newClassButton.setAttribute("onclick","promptForNewClass('What should the class be called?')")
+loadFromLocalStorage();
+newClassButton.setAttribute("onclick","promptForNewClass('What should the class be called?')");
 
 
 function promptForNewClass(promptMessage){
@@ -30,8 +30,8 @@ function promptForNewClass(promptMessage){
     if(newClassName.replaceAll(" ","") !== ""){
         allClasses[newClassName] = {};
         allClasses[newClassName]["currentId"] = 0;
-        allClasses[newClassName]["pupilList"] = {}
-        currentClass = newClassName
+        allClasses[newClassName]["pupilList"] = {};
+        currentClass = newClassName;
         addClassToPage(newClassName);
         openClassToPage(newClassName);
     }
@@ -61,7 +61,19 @@ function saveToTextFile(textAsArray){
     return(textFile);
 }
 
+function saveNameListsToLocalStorage(){
+    let textToSave = JSON.stringify(allClasses);
+    localStorage.setItem("classObject",textToSave);
+}
 
+function loadFromLocalStorage(){
+    allClasses = JSON.parse(localStorage.getItem("classObject"));
+    for(let className of Object.keys(allClasses)){
+        addClassToPage(className);
+    }
+    openClassToPage(Object.keys(allClasses)[0]);
+
+}
 
 function getPupilTXT(allPupils){
     let pupilArrayPrepared = [];
@@ -93,6 +105,7 @@ function addPupilMain(className, pupilName){
         addPupilToClass(className, pupilName);
         let currentId = allClasses[className]["currentId"];
         addPupilToSite(className,pupilName,"pupil"+currentId);
+        saveNameListsToLocalStorage();
     }
 }
 
@@ -130,6 +143,7 @@ function addClassToPage(className){
         openClassToPage(className);
     }
     classNameDiv.appendChild(tempBut);
+    saveNameListsToLocalStorage();
 }
 
 function addPupilToClass(className, pupilName){
