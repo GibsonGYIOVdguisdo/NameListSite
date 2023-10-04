@@ -138,3 +138,14 @@ body{
     height: 100vh;
     overflow-y: hidden;
 }
+
+#NewClassButton{
+    height: 50px;
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+#CurrentClassDisplay{
+    text-align: center;
+    font-size: 20px;
+}

@@ -12,15 +12,22 @@ const lastRandomNameText = document.getElementById("chosenRandomName");
 const previousRandomNameDiv = document.getElementById("lastRandomNames");
 const classNameDiv = document.getElementById("classListDiv");
 const newClassButton = document.getElementById("NewClassButton");
-let currentClass = "new";
+const currentClassText = document.getElementById("CurrentClassDisplay");
+let currentClass = "";
 let nameCount = 0;
 let allPupils = {};
 let allClasses = {};
 
 
-newClassButton.onclick = () =>{
-    newClassName = prompt("What should it be called?");
-    if(newClassName && newClassName in allClasses === false){
+newClassButton.setAttribute("onclick","promptForNewClass('What should the class be called?')")
+
+
+function promptForNewClass(promptMessage){
+    newClassName = prompt(promptMessage);
+    while(newClassName in allClasses){
+        newClassName = prompt(promptMessage);
+    }
+    if(newClassName.replaceAll(" ","") !== ""){
         allClasses[newClassName] = {};
         allClasses[newClassName]["currentId"] = 0;
         allClasses[newClassName]["pupilList"] = {}
@@ -29,6 +36,7 @@ newClassButton.onclick = () =>{
         openClassToPage(newClassName);
     }
 }
+
 
 randomNameButton.onclick = () =>{
     let pupilCount = getPupilArrayFromClass(currentClass).length;
@@ -71,26 +79,26 @@ function updateDownloadButton(){
 
 
 function openClassToPage(className){
-    console.log(className);
     nameArea.innerHTML = "";
     pupilObject = getPupilObjectFromClass(className)
     currentClass = className;
     for(let [key, value] of Object.entries(pupilObject)){
         addPupilToSite(className, value, key);
     }
+    currentClassText.innerHTML = className;
 }
 
 function addPupilMain(className, pupilName){
-    console.log("asda");
-    addPupilToClass(className, pupilName);
-    let currentId = allClasses[className]["currentId"];
-    addPupilToSite(className,pupilName,"pupil"+currentId);
+    if(pupilName.replaceAll(" ","") !== "" && className){
+        addPupilToClass(className, pupilName);
+        let currentId = allClasses[className]["currentId"];
+        addPupilToSite(className,pupilName,"pupil"+currentId);
+    }
 }
 
 function addPupilToSite(className, pupilName, pupilID){
     let pupilButton = addPupilToSiteWithoutDeletion(pupilName,pupilID);
     pupilButton.onclick = () =>{
-        console.log(className, pupilID);
         removePupilFromClassByID(className, pupilID);
         pupilButton.parentNode.remove();
         updateDownloadButton();
@@ -141,7 +149,6 @@ function addPupilToClass(className, pupilName){
 }
 
 function removePupilFromClassByID(className, pupilID){
-    console.log(allClasses[className]["pupilList"][pupilID])
     if(className in allClasses){
         delete allClasses[className]["pupilList"][pupilID];
     }
