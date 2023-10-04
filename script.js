@@ -11,11 +11,24 @@ const randomNameButton = document.getElementById("randomNameButton");
 const lastRandomNameText = document.getElementById("chosenRandomName");
 const previousRandomNameDiv = document.getElementById("lastRandomNames");
 const classNameDiv = document.getElementById("classListDiv");
-
+const newClassButton = document.getElementById("NewClassButton");
 let currentClass = "new";
 let nameCount = 0;
 let allPupils = {};
 let allClasses = {};
+
+
+newClassButton.onclick = () =>{
+    newClassName = prompt("What should it be called?");
+    if(newClassName && newClassName in allClasses === false){
+        allClasses[newClassName] = {};
+        allClasses[newClassName]["currentId"] = 0;
+        allClasses[newClassName]["pupilList"] = {}
+        currentClass = newClassName
+        addClassToPage(newClassName);
+        openClassToPage(newClassName);
+    }
+}
 
 randomNameButton.onclick = () =>{
     let pupilCount = getPupilArrayFromClass(currentClass).length;
@@ -41,6 +54,7 @@ function saveToTextFile(textAsArray){
 }
 
 
+
 function getPupilTXT(allPupils){
     let pupilArrayPrepared = [];
     for(let index = 0; allPupils.length-1>index; index++){
@@ -59,13 +73,15 @@ function updateDownloadButton(){
 function openClassToPage(className){
     console.log(className);
     nameArea.innerHTML = "";
+    pupilObject = getPupilObjectFromClass(className)
     currentClass = className;
-    for(let [key, value] of getPupilObjectFromClass(className)){
+    for(let [key, value] of Object.entries(pupilObject)){
         addPupilToSite(className, value, key);
     }
 }
 
 function addPupilMain(className, pupilName){
+    console.log("asda");
     addPupilToClass(className, pupilName);
     let currentId = allClasses[className]["currentId"];
     addPupilToSite(className,pupilName,"pupil"+currentId);
