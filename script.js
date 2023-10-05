@@ -1,46 +1,57 @@
-const reader1 = new FileReader();
-const reader2 = new FileReader();
-const uploadButton = document.getElementById("addToListButton");
+const reader1 = new FileReader(); //Reader 1 handles adding names from a file to a name list
+const reader2 = new FileReader(); //Reader 2 handles opening a file to a name list (Overwrites current names)
+
 const fileInput = document.getElementById("fileUpload");
+const uploadButton = document.getElementById("addToListButton");
+
 const nameInput = document.getElementById("nameInput");
 const addNameButton = document.getElementById("nameConfirm");
 const nameArea = document.getElementById("nameArea");
+
 const downloadButton = document.getElementById("downloadA");
 const openButton = document.getElementById("openToListButton");
+
 const randomNameButton = document.getElementById("randomNameButton");
 const lastRandomNameText = document.getElementById("chosenRandomName");
 const previousRandomNameDiv = document.getElementById("lastRandomNames");
-const classNameDiv = document.getElementById("classListDiv");
-const newClassButton = document.getElementById("NewClassButton");
-const currentClassText = document.getElementById("CurrentClassDisplay");
-let currentClass = "";
-let nameCount = 0;
-let allPupils = {};
-let allClasses = {};
 
-loadFromLocalStorage();
-newClassButton.setAttribute("onclick","promptForNewClass('What should the class be called?')");
+const nameListsNamesDiv = document.getElementById("classListDiv");
+const newNameListButton = document.getElementById("NewClassButton");
+const currentNameListText = document.getElementById("CurrentClassDisplay");
+
+let currentNameList = ""; //Stores the name of the current selected name list
+let allNameLists = {}; //This one object stores all data for the name lists
 
 
-function promptForNewClass(promptMessage){
-    newClassName = prompt(promptMessage);
-    while(newClassName in allClasses){
-        newClassName = prompt(promptMessage);
-    }
-    if(newClassName.replaceAll(" ","") !== ""){
-        allClasses[newClassName] = {};
-        allClasses[newClassName]["currentId"] = 0;
-        allClasses[newClassName]["pupilList"] = {};
-        currentClass = newClassName;
-        addClassToPage(newClassName);
-        openClassToPage(newClassName);
-    }
+
+
+//Saving and loading name lists from local storage
+
+function saveNameListsToLocalStorage(){
+    let textToSave = JSON.stringify(allNameLists);
+    localStorage.setItem("classObject",textToSave);
 }
 
+function loadFromLocalStorage(){
+    let localStorageNameList = JSON.parse(localStorage.getItem("classObject"));
+    if(localStorageNameList){
+        allNameLists = localStorageNameList;
+        for(let className of Object.keys(allNameLists)){
+            addClassToPage(className);
+        }
+        openClassToPage(Object.keys(allNameLists)[0]);
+    }
+}
+loadFromLocalStorage();
+
+
+
+
+//Random name generator
 
 randomNameButton.onclick = () =>{
-    let pupilCount = getPupilArrayFromClass(currentClass).length;
-    let randomPupil = getPupilArrayFromClass(currentClass)[Math.floor(Math.random()*pupilCount)];
+    let pupilCount = getPupilArrayFromClass(currentNameList).length;
+    let randomPupil = getPupilArrayFromClass(currentNameList)[Math.floor(Math.random()*pupilCount)];
     if(randomPupil != undefined){
         lastRandomNameText.innerHTML = randomPupil;
         let tempPar = document.createElement("p");
@@ -50,64 +61,63 @@ randomNameButton.onclick = () =>{
 }
 
 
-uploadButton.onclick = () => {
-    if (fileInput.files[0] != undefined){
-        reader1.readAsText(fileInput.files[0]);
+
+
+//Adding, removing and editing of the list of name lists (Editing of the "classes")
+
+function promptForNewClass(promptMessage){
+    newClassName = prompt(promptMessage);
+    while(allNameLists && newClassName in allNameLists){
+        newClassName = prompt(promptMessage);
+    }
+    if(newClassName.replaceAll(" ","") !== ""){
+        allNameLists[newClassName] = {};
+        allNameLists[newClassName]["currentId"] = 0;
+        allNameLists[newClassName]["pupilList"] = {};
+        currentNameList = newClassName;
+        addClassToPage(newClassName);
+        openClassToPage(newClassName);
     }
 }
+newNameListButton.setAttribute("onclick","promptForNewClass('What should the class be called?')");
 
-function saveToTextFile(textAsArray){
-    let textFile = new Blob(textAsArray);
-    return(textFile);
-}
 
-function saveNameListsToLocalStorage(){
-    let textToSave = JSON.stringify(allClasses);
-    localStorage.setItem("classObject",textToSave);
-}
-
-function loadFromLocalStorage(){
-    allClasses = JSON.parse(localStorage.getItem("classObject"));
-    for(let className of Object.keys(allClasses)){
-        addClassToPage(className);
+function addClassToPage(className){
+    let tempBut = document.createElement("button");
+    tempBut.innerHTML = className;
+    tempBut.className = "classButton";
+    tempBut.onclick = () => {
+        openClassToPage(className);
     }
-    openClassToPage(Object.keys(allClasses)[0]);
-
-}
-
-function getPupilTXT(allPupils){
-    let pupilArrayPrepared = [];
-    for(let index = 0; allPupils.length-1>index; index++){
-        pupilArrayPrepared.push(allPupils[index]+"\n");
-    }
-    pupilArrayPrepared.push(allPupils[allPupils.length-1]);
-    return(saveToTextFile(pupilArrayPrepared));
-}
-
-function updateDownloadButton(){
-    downloadButton.href = URL.createObjectURL(getPupilTXT(getPupilArrayFromClass(currentClass)));
-    downloadButton.download = "pupils.txt"
+    nameListsNamesDiv.appendChild(tempBut);
+    saveNameListsToLocalStorage();
 }
 
 
 function openClassToPage(className){
     nameArea.innerHTML = "";
     pupilObject = getPupilObjectFromClass(className)
-    currentClass = className;
+    currentNameList = className;
     for(let [key, value] of Object.entries(pupilObject)){
         addPupilToSite(className, value, key);
     }
-    currentClassText.innerHTML = className;
+    currentNameListText.innerHTML = className;
 }
+
+
+
+
+//Adding, removing and editing of pupils (editing of names)
 
 function addPupilMain(className, pupilName){
     if(pupilName.replaceAll(" ","") !== "" && className){
         addPupilToClass(className, pupilName);
-        let currentId = allClasses[className]["currentId"];
+        let currentId = allNameLists[className]["currentId"];
         addPupilToSite(className,pupilName,"pupil"+currentId);
         saveNameListsToLocalStorage();
     }
 }
+
 
 function addPupilToSite(className, pupilName, pupilID){
     let pupilButton = addPupilToSiteWithoutDeletion(pupilName,pupilID);
@@ -117,6 +127,7 @@ function addPupilToSite(className, pupilName, pupilID){
         updateDownloadButton();
     }
 }
+
 
 function addPupilToSiteWithoutDeletion(pupilName, pupilID){ 
     let tempDiv = document.createElement("div");
@@ -135,54 +146,33 @@ function addPupilToSiteWithoutDeletion(pupilName, pupilID){
     return(tempBut);
 }
 
-function addClassToPage(className){
-    let tempBut = document.createElement("button");
-    tempBut.innerHTML = className;
-    tempBut.className = "classButton";
-    tempBut.onclick = () => {
-        openClassToPage(className);
-    }
-    classNameDiv.appendChild(tempBut);
-    saveNameListsToLocalStorage();
-}
 
 function addPupilToClass(className, pupilName){
-    if(className in allClasses){
-        allClasses[className]["currentId"] += 1;
-        currentPupilId = allClasses[className]["currentId"];
-        allClasses[className]["pupilList"]["pupil"+currentPupilId] = pupilName;
+    if(className in allNameLists){
+        allNameLists[className]["currentId"] += 1;
+        currentPupilId = allNameLists[className]["currentId"];
+        allNameLists[className]["pupilList"]["pupil"+currentPupilId] = pupilName;
     }
     else{
-        allClasses[className] = {};
-        allClasses[className]["currentId"] = 1;
-        allClasses[className]["pupilList"] = {};
-        currentPupilId = allClasses[className]["currentId"];    
-        allClasses[className]["pupilList"]["pupil"+currentPupilId] = pupilName;
+        allNameLists[className] = {};
+        allNameLists[className]["currentId"] = 1;
+        allNameLists[className]["pupilList"] = {};
+        currentPupilId = allNameLists[className]["currentId"];    
+        allNameLists[className]["pupilList"]["pupil"+currentPupilId] = pupilName;
         addClassToPage(className);
     }
-}
-
-function removePupilFromClassByID(className, pupilID){
-    if(className in allClasses){
-        delete allClasses[className]["pupilList"][pupilID];
-    }
-}
-
-function getPupilArrayFromClass(className){
-    return(Object.values(allClasses[className]["pupilList"]));
-}
-
-function getPupilObjectFromClass(className){
-    return(allClasses[className]["pupilList"]);
 }
 
 
 function addNameViaInputField(){
     if (nameInput.value){
-        addPupilMain(currentClass, nameInput.value);
+        addPupilMain(currentNameList, nameInput.value);
     }
     nameInput.value = "";
 }
+addNameButton.onclick = addNameViaInputField;
+
+
 nameInput.addEventListener("keydown", (event) => {
     if(event.key == "Enter"){
         addNameViaInputField();
@@ -190,28 +180,82 @@ nameInput.addEventListener("keydown", (event) => {
 })
 
 
-addNameButton.onclick = addNameViaInputField;
+
+
+//File handling
 
 openButton.onclick = () =>{
     reader2.readAsText(fileInput.files[0]);
-
 }
+
+
 reader1.onload = (result) =>{
     let allText = result.target.result;
     allText = allText.replaceAll("\r","");
     let fileAsArray = allText.split("\n");
     for (let pupil of fileAsArray){
-        addPupilMain(currentClass, pupil);
+        addPupilMain(currentNameList, pupil);
     }
 }
+
+
 reader2.onload = (result) =>{
-    allClasses[currentClass]["pupilList"] = {};
+    allNameLists[currentNameList]["pupilList"] = {};
     nameArea.innerHTML="";
     let allText = result.target.result;
     allText = allText.replaceAll("\r","");
     let fileAsArray = allText.split("\n");
     for (let pupil of fileAsArray){
-        addPupilMain(currentClass, pupil);
+        addPupilMain(currentNameList, pupil);
     }
 }
 
+
+function saveToTextFile(textAsArray){
+    let textFile = new Blob(textAsArray);
+    return(textFile);
+}
+
+
+function getPupilTXT(allPupils){
+    let pupilArrayPrepared = [];
+    for(let index = 0; allPupils.length-1>index; index++){
+        pupilArrayPrepared.push(allPupils[index]+"\n");
+    }
+    pupilArrayPrepared.push(allPupils[allPupils.length-1]);
+    return(saveToTextFile(pupilArrayPrepared));
+}
+
+
+function updateDownloadButton(){
+    downloadButton.href = URL.createObjectURL(getPupilTXT(getPupilArrayFromClass(currentNameList)));
+    downloadButton.download = "pupils.txt"
+}
+
+
+uploadButton.onclick = () => {
+    if (fileInput.files[0] != undefined){
+        reader1.readAsText(fileInput.files[0]);
+    }
+}
+
+
+
+
+//Helper functions
+
+function getPupilArrayFromClass(className){
+    return(Object.values(allNameLists[className]["pupilList"]));
+}
+
+
+function getPupilObjectFromClass(className){
+    return(allNameLists[className]["pupilList"]);
+}
+
+
+function removePupilFromClassByID(className, pupilID){
+    if(className in allNameLists){
+        delete allNameLists[className]["pupilList"][pupilID];
+    }
+}
