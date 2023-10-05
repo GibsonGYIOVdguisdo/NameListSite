@@ -1,3 +1,5 @@
+//Variables
+
 const reader1 = new FileReader(); //Reader 1 handles adding names from a file to a name list
 const reader2 = new FileReader(); //Reader 2 handles opening a file to a name list (Overwrites current names)
 
@@ -257,5 +259,6 @@ function getPupilObjectFromClass(className){
 function removePupilFromClassByID(className, pupilID){
     if(className in allNameLists){
         delete allNameLists[className]["pupilList"][pupilID];
+        saveNameListsToLocalStorage();
     }
 }
