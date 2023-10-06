@@ -51,14 +51,54 @@ loadFromLocalStorage();
 
 //Random name generator
 
-randomNameButton.onclick = () =>{
-    let pupilCount = getPupilArrayFromClass(currentNameList).length;
-    let randomPupil = getPupilArrayFromClass(currentNameList)[Math.floor(Math.random()*pupilCount)];
-    if(randomPupil != undefined){
-        lastRandomNameText.innerHTML = randomPupil;
-        let tempPar = document.createElement("p");
-        tempPar.innerHTML = randomPupil;
-        previousRandomNameDiv.prepend(tempPar);
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+randomNameButton.onclick = randomNameCode;
+
+let choosingRandomName = false;
+async function randomNameCode(){
+    if(choosingRandomName === false){
+        choosingRandomName = true;
+        let nameListForRandom = currentNameList;
+        let pupilCount = getPupilArrayFromClass(nameListForRandom).length;
+        let randomPupil = "";
+        let startIndex = Math.floor(Math.random()*pupilCount);
+        let randomScrollAmount = Math.floor(Math.random()*10)+20;
+        lastRandomNameText.style = "font-weight: 200;"
+        for(i=randomScrollAmount;i>=1;i--){
+            index = (startIndex+i)%(pupilCount)
+            randomPupil = getPupilArrayFromClass(nameListForRandom)[index];
+            lastRandomNameText.innerHTML = randomPupil;
+            if(i>10){
+                await sleep(50);
+            }
+            else if(i>7){
+                await sleep(100)
+            }
+            else if(i>5){
+                await sleep(180)
+            }
+            else if(i>3){
+                await sleep(330)
+            }
+            else if(i===3){
+                await sleep(600)
+            }
+            else if(i===2){
+                await sleep(1000)
+            }
+            if(!randomPupil){
+                break;
+            }
+        }
+        lastRandomNameText.style = "font-weight: 600;"
+        if(randomPupil != undefined){
+            let tempPar = document.createElement("p");
+            tempPar.innerHTML = randomPupil;
+            previousRandomNameDiv.prepend(tempPar)
+        }
+        choosingRandomName = false;
     }
 }
 
