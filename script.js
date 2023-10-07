@@ -107,7 +107,7 @@ async function randomNameCode(){
 
 //Adding, removing and editing of the list of name lists (Editing of the "classes")
 
-function promptForNewClass(promptMessage){
+function promptForNewNameList(promptMessage){
     newClassName = prompt(promptMessage);
     while(allNameLists && newClassName in allNameLists){
         newClassName = prompt(promptMessage);
@@ -121,7 +121,7 @@ function promptForNewClass(promptMessage){
         openClassToPage(newClassName);
     }
 }
-newNameListButton.setAttribute("onclick","promptForNewClass('What should the class be called?')");
+newNameListButton.setAttribute("onclick","promptForNewNameList('What should the name list be called?')");
 
 
 function addClassToPage(className){
