@@ -151,6 +151,13 @@ function openClassToPage(className){
 
 //Adding, removing and editing of pupils (editing of names)
 
+function removePupilFromClassByID(className, pupilID){
+    if(className in allNameLists){
+        delete allNameLists[className]["pupilList"][pupilID];
+        saveNameListsToLocalStorage();
+    }
+}
+
 function addPupilMain(className, pupilName){
     if(pupilName.replaceAll(" ","") !== "" && className){
         addPupilToClass(className, pupilName);
@@ -162,30 +169,62 @@ function addPupilMain(className, pupilName){
 
 
 function addPupilToSite(className, pupilName, pupilID){
-    let pupilButton = addPupilToSiteWithoutDeletion(pupilName,pupilID);
+    let buttons = addPupilToSiteWithoutDeletion(pupilName,pupilID);
+    let pupilButton = buttons[0]
+    let editButton = buttons[1]
     pupilButton.onclick = () =>{
         removePupilFromClassByID(className, pupilID);
         pupilButton.parentNode.remove();
         updateDownloadButton();
     }
+    editButton.onclick = () =>{
+        let newName = promptForNewName();
+        let nameText = document.getElementById(pupilID + "Text");
+        nameText.innerHTML = newName;
+        editPupilNameById(className, pupilID, newName);
+    }
 }
 
+function editPupilNameById(className, pupilID, newName){
+    if(className in allNameLists){
+        allNameLists[className]["pupilList"][pupilID] = newName;
+
+        updateDownloadButton();
+        saveNameListsToLocalStorage();
+    }
+
+}
+
+function promptForNewName(){
+    let name = prompt("What should it be renamed");
+    while ((name.replaceAll(" ","" ) === "") || !name){
+        name = prompt("What should it be renamed");
+    }
+    return(name);
+}
 
 function addPupilToSiteWithoutDeletion(pupilName, pupilID){ 
-    let tempDiv = document.createElement("div");
+    let tempDiv1 = document.createElement("div");
+    let tempDiv2 = document.createElement("div");
     let tempPar = document.createElement("p");
-    let tempBut = document.createElement("button");
+    let tempBut1 = document.createElement("button");
+    let tempBut2 = document.createElement("button");
+    tempBut2.innerHTML = "edit";
     tempPar.innerHTML = pupilName;
-    tempBut.innerHTML = "remove";
-    tempBut.className = "pupilRemoveButton";
+    tempBut1.innerHTML = "remove";
+    tempBut1.className = "pupilRemoveButton";
     tempPar.className = "pupilName";
-    tempDiv.appendChild(tempPar);
-    tempDiv.appendChild(tempBut);
-    tempDiv.className = "pupilDiv";
-    nameArea.appendChild(tempDiv);
-    tempBut.id = pupilID;
+    tempPar.id = pupilID + "Text"
+    tempDiv1.className = "pupilDiv";
+    tempBut2.className = "editButton";
+    tempDiv1.appendChild(tempPar);
+    tempDiv2.appendChild(tempBut2)
+    tempDiv2.appendChild(tempBut1)
+    tempDiv1.appendChild(tempDiv2);
+    nameArea.appendChild(tempDiv1);
+    tempBut1.id = pupilID;
     updateDownloadButton();
-    return(tempBut);
+    return([tempBut1    ,tempBut2]);
 }
 
 
@@ -296,9 +335,3 @@ function getPupilObjectFromClass(className){
 }
 
 
-function removePupilFromClassByID(className, pupilID){
-    if(className in allNameLists){
-        delete allNameLists[className]["pupilList"][pupilID];
-        saveNameListsToLocalStorage();
-    }
-}

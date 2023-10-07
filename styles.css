@@ -101,8 +101,12 @@ body{
     padding-left:10px;
     padding-right:10px;
 }
-.pupilRemoveButton{
+.pupilRemoveButton, .editButton{
     height: 40px;
+}
+
+.editButton{
+    margin-right: 5px;
 }
 
 .downloadButton{
