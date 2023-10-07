@@ -174,7 +174,7 @@ function addPupilToSite(className, pupilName, pupilID){
     let editButton = buttons[1]
     pupilButton.onclick = () =>{
         removePupilFromClassByID(className, pupilID);
-        pupilButton.parentNode.remove();
+        pupilButton.parentNode.parentNode.remove();
         updateDownloadButton();
     }
     editButton.onclick = () =>{
