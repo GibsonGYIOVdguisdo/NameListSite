@@ -125,16 +125,37 @@ newNameListButton.setAttribute("onclick","promptForNewNameList('What should the 
 
 
 function addClassToPage(className){
-    let tempBut = document.createElement("button");
-    tempBut.innerHTML = className;
-    tempBut.className = "classButton";
-    tempBut.onclick = () => {
+    let tempDiv1 = document.createElement("div"); 
+    let tempDiv2 = document.createElement("div"); 
+    tempDiv2.style = "display: flex; justify-content: space-between;"
+    tempDiv1.style = "display: inline-block;"
+    let tempBut1 = document.createElement("button");
+    tempBut1.style = "width: 100%;"
+    tempBut1.innerHTML = className;
+    tempBut1.className = "classButton";
+
+    let tempBut2 = document.createElement("button");
+    tempBut2.innerHTML = "del";
+    tempBut2.className = "classButton";
+
+    tempBut1.onclick = () => {
         openClassToPage(className);
     }
-    nameListsNamesDiv.appendChild(tempBut);
+    tempBut2.onclick = () => {
+        tempBut2.parentNode.parentNode.remove();
+        delete allNameLists[className];
+        if(className === currentNameList){
+            openClassToPage(Object.keys(allNameLists)[0]);
+        }
+        saveNameListsToLocalStorage();
+    }
+
+    tempDiv2.appendChild(tempBut1);
+    tempDiv1.appendChild(tempBut2);
+    tempDiv2.appendChild(tempDiv1);
+    nameListsNamesDiv.appendChild(tempDiv2);
     saveNameListsToLocalStorage();
 }
-
 
 function openClassToPage(className){
     nameArea.innerHTML = "";
@@ -192,7 +213,6 @@ function editPupilNameById(className, pupilID, newName){
         updateDownloadButton();
         saveNameListsToLocalStorage();
     }
-
 }
 
 function promptForNewName(){
