@@ -128,7 +128,7 @@ function addClassToPage(className){
     let tempDiv1 = document.createElement("div"); 
     let tempDiv2 = document.createElement("div"); 
     tempDiv2.style = "display: flex; justify-content: space-between;"
-    tempDiv1.style = "display: inline-block;"
+    tempDiv1.style = "display: flex;"
     let tempBut1 = document.createElement("button");
     tempBut1.style = "width: 100%;"
     tempBut1.innerHTML = className;
@@ -137,6 +137,10 @@ function addClassToPage(className){
     let tempBut2 = document.createElement("button");
     tempBut2.innerHTML = "del";
     tempBut2.className = "classButton";
+
+    let tempBut3 = document.createElement("button");
+    tempBut3.innerHTML = "edit";
+    tempBut3.className = "classButton";
 
     tempBut1.onclick = () => {
         openClassToPage(className);
@@ -149,8 +153,23 @@ function addClassToPage(className){
         }
         saveNameListsToLocalStorage();
     }
+    tempBut3.onclick = () => {
+        let tempName = promptForNewName();
+        if (tempName.replaceAll(" ","")){
+            let tempList = allNameLists[className];
+            delete allNameLists[className];
+            allNameLists[tempName] = tempList;
+            if(className === currentNameList){
+                openClassToPage(tempName);
+            }
+            tempBut2.parentNode.parentNode.remove();
+            addClassToPage(tempName);
+            saveNameListsToLocalStorage();
+        }
+    }
 
     tempDiv2.appendChild(tempBut1);
+    tempDiv1.appendChild(tempBut3);
     tempDiv1.appendChild(tempBut2);
     tempDiv2.appendChild(tempDiv1);
     nameListsNamesDiv.appendChild(tempDiv2);
