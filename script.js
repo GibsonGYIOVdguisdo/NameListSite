@@ -200,16 +200,17 @@ function addPupilToSite(className, pupilName, pupilID){
     }
     editButton.onclick = () =>{
         let newName = promptForNewName();
-        let nameText = document.getElementById(pupilID + "Text");
-        nameText.innerHTML = newName;
-        editPupilNameById(className, pupilID, newName);
+        if (newName.replaceAll(" ","") !== ""){
+            let nameText = document.getElementById(pupilID + "Text");
+            nameText.innerHTML = newName;
+            editPupilNameById(className, pupilID, newName);
+        }
     }
 }
 
 function editPupilNameById(className, pupilID, newName){
     if(className in allNameLists){
         allNameLists[className]["pupilList"][pupilID] = newName;
-
         updateDownloadButton();
         saveNameListsToLocalStorage();
     }
@@ -217,9 +218,6 @@ function editPupilNameById(className, pupilID, newName){
 
 function promptForNewName(){
     let name = prompt("What should it be renamed");
-    while ((name.replaceAll(" ","" ) === "") || !name){
-        name = prompt("What should it be renamed");
-    }
     return(name);
 }
 
