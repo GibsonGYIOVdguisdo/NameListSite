@@ -62,9 +62,18 @@ body{
     display: flex;
     flex-direction: column;
 }
+.UploadDiv{
+    display: flex;
+    justify-content: space-between;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+
 .CenterElements{
     display: flex;
     justify-content: space-around;
+    margin-left:
 }
 
 .NameAddDiv{
@@ -94,6 +103,7 @@ body{
 
 .UploadButton{
     width: 100px;
+    
 }
 .pupilDiv, .classButton{
     display: flex;
